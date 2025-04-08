@@ -1,0 +1,19 @@
+{
+  "name": "term-project",
+  "version": "1.0.0",
+  "description": "SER 341 Backend Project Spring 2025",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaulZ357/SER341Project.git"
+  },
+  "author": "Calvin Pancavage, Omar Fofana, Paul Zegarek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PaulZ357/SER341Project/issues"
+  },
+  "homepage": "https://github.com/PaulZ357/SER341Project#readme"
+}
