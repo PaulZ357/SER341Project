@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/PaulZ357/SER341Project/issues"
   },
-  "homepage": "https://github.com/PaulZ357/SER341Project#readme"
+  "homepage": "https://github.com/PaulZ357/SER341Project#readme",
+  "dependencies": {
+    "eslint": "^9.24.0",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
