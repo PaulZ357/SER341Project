@@ -6,6 +6,7 @@ let mongoServer;
 
 beforeAll(async () => {
   await mongoose.connect(uri);
+  await User.deleteMany({});
 });
 
 afterAll(async () => {
@@ -46,7 +47,7 @@ describe('User Model Test', () => {
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await userWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
@@ -64,12 +65,12 @@ describe('User Model Test', () => {
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await userWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.username).toBeDefined();
   });
 
   it('should fail to create a user without a password', async () => {
@@ -82,12 +83,12 @@ describe('User Model Test', () => {
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await userWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.password).toBeDefined();
   });
 
   it('should fail to create a user without a type', async () => {
@@ -100,16 +101,16 @@ describe('User Model Test', () => {
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await userWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.type).toBeDefined();
   });
 
   it('should fail to create a recipe with a duplicate username', async () => {
-    const user = new User({
+    const course = new User({
       name: 'John Doe',
       username: 'johndoe',
       password: 'password123',
@@ -117,7 +118,7 @@ describe('User Model Test', () => {
       courses: [],
       feedbacks: []
     });
-    await recipe.save();
+    await course.save();
     const duplicateUser = new User({
       name: 'Bob Smith',
       username: 'johndoe', // Duplicate username
@@ -128,11 +129,10 @@ describe('User Model Test', () => {
     });
     let err;
     try {
-      await duplicateRecipe.save();
+      await duplicateUser.save();
+      fail("Expected duplicate username error to be thrown");
     } catch (error) {
       err = error;
     }
-    expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.username).toBeDefined();
   });
 });

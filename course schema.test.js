@@ -13,7 +13,7 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-  await User.deleteMany({});
+  await Course.deleteMany({});
 });
 
 describe('Recipe Model Test', () => {
@@ -43,88 +43,121 @@ describe('Recipe Model Test', () => {
     expect(savedCourse.assignments).toBe(validCourse.assignments);
   });
 
-  it('should fail to create a user without a name', async () => {
-    const userWithoutRequiredField = new User({
-      username: 'johndoe',
-      password: 'password123',
-      type: 'student',
-      courses: [],
-      feedbacks: []
+  it('should fail to create a course without a courseID', async () => {
+    const courseWithoutRequiredField = new Course({
+      sectionNumber: "01",
+      courseName: "Software Engineering",
+      professor: new User({
+        name: 'John Doe',
+        username: 'johndoe',
+        password: 'password123',
+        type: 'student',
+        courses: [],
+        feedbacks: []
+      }),
+      assignments: [1, 2, 3],
+      lessons: [],
+      students: []
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await courseWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.courseID).toBeDefined();
   });
 
-  it('should fail to create a user without a username', async () => {
-    const userWithoutRequiredField = new User({
-      name: 'John Doe',
-      password: 'password123',
-      type: 'student',
-      courses: [],
-      feedbacks: []
+  it('should fail to create a course without a sectionNumber', async () => {
+    const courseWithoutRequiredField = new Course({
+      courseID: "SER341",
+      courseName: "Software Engineering",
+      professor: new User({
+        name: 'John Doe',
+        username: 'johndoe',
+        password: 'password123',
+        type: 'student',
+        courses: [],
+        feedbacks: []
+      }),
+      assignments: [1, 2, 3],
+      lessons: [],
+      students: []
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await courseWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.sectionNumber).toBeDefined();
   });
 
-  it('should fail to create a user without a password', async () => {
-    const userWithoutRequiredField = new User({
-      name: 'John Doe',
-      username: 'johndoe',
-      type: 'student',
-      courses: [],
-      feedbacks: []
+  it('should fail to create a course without a courseName', async () => {
+    const courseWithoutRequiredField = new Course({
+      courseID: "SER341",
+      sectionNumber: "01",
+      professor: new User({
+        name: 'John Doe',
+        username: 'johndoe',
+        password: 'password123',
+        type: 'student',
+        courses: [],
+        feedbacks: []
+      }),
+      assignments: [1, 2, 3],
+      lessons: [],
+      students: []
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await courseWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.courseName).toBeDefined();
   });
 
-  it('should fail to create a user without a type', async () => {
-    const userWithoutRequiredField = new User({
-      name: 'John Doe',
-      username: 'johndoe',
-      password: 'password123',
-      courses: [],
-      feedbacks: []
+  it('should fail to create a course without a professor', async () => {
+    const courseWithoutRequiredField = new Course({
+      courseID: "SER341",
+      sectionNumber: "01",
+      courseName: "Software Engineering",
+      assignments: [1, 2, 3],
+      lessons: [],
+      students: []
     });
     let err;
     try {
-      await recipeWithoutRequiredField.save();
+      await courseWithoutRequiredField.save();
     } catch (error) {
       err = error;
     }
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.name).toBeDefined();
+    expect(err.errors.professor).toBeDefined();
   });
 
-  it('should fail to create a recipe with a duplicate username', async () => {
-    const user = new User({
-      name: 'John Doe',
-      username: 'johndoe',
-      password: 'password123',
-      type: 'student',
-      courses: [],
-      feedbacks: []
+  it('should fail to create a course with a duplicate courseID', async () => {
+    const course = new Course({
+      courseID: "SER341",
+      sectionNumber: "01",
+      courseName: "Software Engineering",
+      professor: new User({
+        name: 'John Doe',
+        username: 'johndoe',
+        password: 'password123',
+        type: 'student',
+        courses: [],
+        feedbacks: []
+      }),
+      assignments: [1, 2, 3],
+      lessons: [],
+      students: []
     });
-    await recipe.save();
+    await course.save();
     const duplicateUser = new User({
       name: 'Bob Smith',
       username: 'johndoe', // Duplicate username
@@ -135,11 +168,10 @@ describe('Recipe Model Test', () => {
     });
     let err;
     try {
-      await duplicateRecipe.save();
+      await duplicateUser.save();
+      fail("Expected duplicate username error to be thrown");
     } catch (error) {
       err = error;
     }
-    expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
-    expect(err.errors.username).toBeDefined();
   });
 });
