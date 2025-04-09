@@ -3,9 +3,19 @@ const uri = `mongodb+srv://node-user:node-app123@cluster0.xwwvl.mongodb.net/?ret
 const Course = require("./course schema");
 const User = require("./user schema");
 let mongoServer;
+let professor
 
 beforeAll(async () => {
   await mongoose.connect(uri);
+  professor = new User({
+    name: 'John Doe',
+    username: 'johndoe',
+    password: 'password123',
+    type: 'student',
+    courses: [],
+    feedbacks: []
+  });
+  await Course.deleteMany({});
 });
 
 afterAll(async () => {
@@ -22,14 +32,7 @@ describe('Recipe Model Test', () => {
       courseID: "SER341",
       sectionNumber: "01",
       courseName: "Software Engineering",
-      professor: new User({
-        name: 'John Doe',
-        username: 'johndoe',
-        password: 'password123',
-        type: 'student',
-        courses: [],
-        feedbacks: []
-      }),
+      professor: professor,
       assignments: [1, 2, 3],
       lessons: [],
       students: []
@@ -47,14 +50,7 @@ describe('Recipe Model Test', () => {
     const courseWithoutRequiredField = new Course({
       sectionNumber: "01",
       courseName: "Software Engineering",
-      professor: new User({
-        name: 'John Doe',
-        username: 'johndoe',
-        password: 'password123',
-        type: 'student',
-        courses: [],
-        feedbacks: []
-      }),
+      professor: professor,
       assignments: [1, 2, 3],
       lessons: [],
       students: []
@@ -73,14 +69,7 @@ describe('Recipe Model Test', () => {
     const courseWithoutRequiredField = new Course({
       courseID: "SER341",
       courseName: "Software Engineering",
-      professor: new User({
-        name: 'John Doe',
-        username: 'johndoe',
-        password: 'password123',
-        type: 'student',
-        courses: [],
-        feedbacks: []
-      }),
+      professor: professor,
       assignments: [1, 2, 3],
       lessons: [],
       students: []
@@ -99,14 +88,7 @@ describe('Recipe Model Test', () => {
     const courseWithoutRequiredField = new Course({
       courseID: "SER341",
       sectionNumber: "01",
-      professor: new User({
-        name: 'John Doe',
-        username: 'johndoe',
-        password: 'password123',
-        type: 'student',
-        courses: [],
-        feedbacks: []
-      }),
+      professor: professor,
       assignments: [1, 2, 3],
       lessons: [],
       students: []
@@ -145,26 +127,20 @@ describe('Recipe Model Test', () => {
       courseID: "SER341",
       sectionNumber: "01",
       courseName: "Software Engineering",
-      professor: new User({
-        name: 'John Doe',
-        username: 'johndoe',
-        password: 'password123',
-        type: 'student',
-        courses: [],
-        feedbacks: []
-      }),
+      professor: professor,
       assignments: [1, 2, 3],
       lessons: [],
       students: []
     });
     await course.save();
-    const duplicateUser = new User({
-      name: 'Bob Smith',
-      username: 'johndoe', // Duplicate username
-      password: 'password456',
-      type: 'professor',
-      courses: [],
-      feedbacks: []
+    const duplicateCourse = new Course({
+      courseID: "SER341",
+      sectionNumber: "02",
+      courseName: "Software Engineering II",
+      professor: professor,
+      assignments: [4, 5, 6],
+      lessons: [],
+      students: []
     });
     let err;
     try {
