@@ -1,9 +1,9 @@
+require("./dependency fix"); // Fixes TextEncoder/TextDecoder issue
 const mongoose = require('mongoose');
 const uri = `mongodb+srv://node-user:node-app123@cluster0.xwwvl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const Feedback = require("./feedback schema");
 const Course = require("./course schema");
 const User = require("./user schema");
-let mongoServer;
 let course;
 let student;
 
@@ -24,7 +24,7 @@ beforeAll(async () => {
     assignments: [1, 2, 3],
     lessons: [],
     students: []
-  }),
+  });
   student = new User({
     name: "Seth Rogers",
     username: "sethrogers",
@@ -44,7 +44,7 @@ afterEach(async () => {
   await Feedback.deleteMany({});
 });
 
-describe('Recipe Model Test', () => {
+describe('Feedback Model Test', () => {
   it('should create & save a course successfully', async () => {
     const validFeedback = new Feedback({
       course: course,

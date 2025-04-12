@@ -1,8 +1,8 @@
+require("./dependency fix"); // Fixes TextEncoder/TextDecoder issue
 const mongoose = require('mongoose');
 const uri = `mongodb+srv://node-user:node-app123@cluster0.xwwvl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const Course = require("./course schema");
 const User = require("./user schema");
-let mongoServer;
 let professor
 
 beforeAll(async () => {
@@ -26,7 +26,7 @@ afterEach(async () => {
   await Course.deleteMany({});
 });
 
-describe('Recipe Model Test', () => {
+describe('Course Model Test', () => {
   it('should create & save a course successfully', async () => {
     const validCourse = new Course({
       courseID: "SER341",
@@ -144,10 +144,13 @@ describe('Recipe Model Test', () => {
     });
     let err;
     try {
-      await duplicateUser.save();
-      fail("Expected duplicate username error to be thrown");
+      await duplicateCourse.save();
+      // fail("Expected duplicate username error to be thrown");
     } catch (error) {
       err = error;
     }
+    expect(err).toBeDefined();
+    expect(err.name).toBe('MongoServerError');
+    expect(err.code).toBe(11000); // Duplicate key error
   });
 });

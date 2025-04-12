@@ -1,3 +1,4 @@
+require("./dependency fix"); // Fixes TextEncoder/TextDecoder issue
 const mongoose = require('mongoose');
 const uri = `mongodb+srv://node-user:node-app123@cluster0.xwwvl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const Lesson = require("./lesson schema");
@@ -22,7 +23,7 @@ beforeAll(async () => {
     assignments: [1, 2, 3],
     lessons: [],
     students: []
-  }),
+  });
   await Lesson.deleteMany({});
 });
 
@@ -34,7 +35,7 @@ afterEach(async () => {
   await Lesson.deleteMany({});
 });
 
-describe('Recipe Model Test', () => {
+describe('Lesson Model Test', () => {
   it('should create & save a course successfully', async () => {
     const validLesson = new Lesson({
       feedbacks: [],

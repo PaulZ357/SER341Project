@@ -1,8 +1,8 @@
+require("./dependency fix"); // Fixes TextEncoder/TextDecoder issue
 const mongoose = require('mongoose');
 const uri = `mongodb+srv://node-user:node-app123@cluster0.xwwvl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const User = require("./user schema");
 
-let mongoServer;
 
 beforeAll(async () => {
   await mongoose.connect(uri);
@@ -130,9 +130,11 @@ describe('User Model Test', () => {
     let err;
     try {
       await duplicateUser.save();
-      fail("Expected duplicate username error to be thrown");
     } catch (error) {
       err = error;
     }
+    expect(err).toBeDefined();
+    expect(err.name).toBe('MongoServerError');
+    expect(err.code).toBe(11000); // Duplicate key error
   });
 });
