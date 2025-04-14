@@ -13,6 +13,6 @@ var lessonSchema = new Schema({
     },
 });
 
-var lessons = mongoose.model('lesson', lessonSchema);
+var lessons = mongoose.model('Lesson', lessonSchema);
 
 module.exports = lessons;
