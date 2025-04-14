@@ -25,6 +25,6 @@ var feedbackSchema = new Schema({
     }
 });
 
-var feedbacks = mongoose.model('feedback', feedbackSchema);
+var feedbacks = mongoose.model('Feedback', feedbackSchema);
 
 module.exports = feedbacks;
