@@ -1,6 +1,5 @@
-require("./dependency fix"); // Fixes TextEncoder/TextDecoder issue
 const mongoose = require('mongoose');
-const config = require("../../config/default.json");
+const config = require("../config/default.json");
 const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASS}@cluster0.${config.DB_URL}.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const User = require("./user schema");
 
@@ -78,9 +77,6 @@ describe('User Model Test', () => {
     const userWithoutRequiredField = new User({
       name: 'John Doe',
       username: 'johndoe',
-      type: 'student',
-      courses: [],
-      feedbacks: []
     });
     let err;
     try {

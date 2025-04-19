@@ -1,7 +1,6 @@
-require("../dependency fix"); // Fixes TextEncoder/TextDecoder issue
 const mongoose = require('mongoose');
-const config = require("../../config/default.json");
-const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASS}@cluster0.${config.DB_PASS}.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const config = require("../config/default.json");
+const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASS}@cluster0.${config.DB_URL}.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const Course = require("./course schema");
 const User = require("./user schema");
 let professor
