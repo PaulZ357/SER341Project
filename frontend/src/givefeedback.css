@@ -1,0 +1,47 @@
+.rating-form {
+    width: fit-content;
+    margin: auto;
+}
+
+.rating {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin: auto;
+    width: fit-content;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.rating label:hover,
+.rating label:hover~label {
+    color: darkgoldenrod;
+}
+
+.rating input:checked~label {
+    color: goldenrod;
+}
+
+.open-ended {
+    margin: 5%;
+}
+
+.open-ended label {
+    font-size: 24px;
+}
+
+.open-ended textarea {
+    width: 100%;
+}
+
+.submit {
+    margin-top: 2%;
+}

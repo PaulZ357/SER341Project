@@ -1,0 +1,27 @@
+import React, { Component } from "react";
+import { getCourse } from "./../services/CourseService";
+class CourseDetails extends Component {
+  state = {
+    course: {},
+  };
+  componentDidMount() {
+    const course = getCourse(this.props.match.params.id);
+    console.log(course);
+    if (!course) return this.props.history.replace("/not-found");
+    this.setState({ course });
+  }
+  render() {
+    const { course } = this.state;
+    return (
+      <div>
+        <h3>Course details</h3>
+        <div> id: {course.id} </div>
+        <div> courseID: {course.courseID} </div>
+        <div> courseName: {course.courseName} </div>
+        <div> professor: {course.professor} </div>
+      </div>
+    );
+  }
+}
+
+export default CourseDetails;

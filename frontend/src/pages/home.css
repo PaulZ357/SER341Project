@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+}
+
+.app-container {
+  display: flex;
+  flex-grow: 1;
+  height: 100vh;
+}
+
+.left-sidebar {
+  background-color: #282c34;
+  color: white;
+  width: 15%; 
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  position: fixed;
+  left: 0;
+}
+
+.left-sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 15px 20px;
+  text-align: left;
+  display: block;
+  width: 100%;
+}
+
+.left-sidebar a:hover {
+  background-color: #282c34;
+}
+
