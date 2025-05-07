@@ -7,12 +7,14 @@ function Login({ setIsLoggedIn }) {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const validDomains = ["@school.edu","@quinnipiac.edu"];
+  const validDomains = ["@school.edu", "@quinnipiac.edu"];
   const [showRoleSelection, setShowRoleSelection] = useState(false);
+  const [signingUp, setSigningUp] = useState(false);
+  const [professor, setProfessor] = useState(false);
   const navigate = useNavigate();
 
   const checkValidDomain = (email) => {
-    for (var i = 0; i<validDomains.length; i++) {
+    for (var i = 0; i < validDomains.length; i++) {
       if (email.endsWith(validDomains[i])) {
         return true;
       }
@@ -42,37 +44,39 @@ function Login({ setIsLoggedIn }) {
       <div className="header">
         <h1>Course Feedback Logger</h1>
       </div>
-      {!showRoleSelection ? (
-        <div className="form-container">
-          <h2>Sign Up</h2>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Enter your school email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {error && <p className="error-text">{error}</p>}
-          <button onClick={handleSignUp}>Sign Up</button>
-        </div>
-      ) : (
-        <div className="form-container">
-          <h2>Select Your Role</h2>
-          <button onClick={() => handleRoleSelection("Professor")}>Professor?</button>
-          <button onClick={() => handleRoleSelection("Student")}>Student?</button>
-        </div>
-      )}
+      <div className="form-container">
+        <h2>{signingUp ? "Sign Up" : "Log In"}</h2>
+        <button onClick={() => setSigningUp(!signingUp)}>{signingUp ? "Log In" : "Sign Up"} instead</button>
+        {signingUp ? (
+          <div>
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            <div>
+              <h4 class="role">Select Your Role</h4>
+              <button onClick={() => handleRoleSelection("Professor")}>Professor?</button>
+              <button onClick={() => handleRoleSelection("Student")}>Student?</button>
+            </div>
+          </div>) : (<div/>)}
+        <input
+          type="email"
+          placeholder="Enter your school email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {/* Put a password field here if you want to implement a password system later. */}
+        {error && <p className="error-text">{error}</p>}
+        <button onClick={handleSignUp}>Sign Up</button>
+      </div>
     </div>
   );
 }
