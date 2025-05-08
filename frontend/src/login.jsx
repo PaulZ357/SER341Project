@@ -74,7 +74,8 @@ function Login({ setIsLoggedIn }) {
     try {
       if (signingUp) {
         const user = {
-          name: `${formData.firstName} ${formData.lastName}`,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           username: formData.username,
           password: formData.password,
           type: professor ? "professor" : "student",

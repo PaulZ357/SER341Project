@@ -112,7 +112,7 @@ function Profile() {
           <div className="profile-info">
             <p>
               <strong>
-                {user.name}
+                {user.firstName} {user.lastName}
               </strong>
             </p>
           </div>
