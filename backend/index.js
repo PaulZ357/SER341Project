@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 const config = require('./config/default.json');
 const mongoose = require('mongoose');
-mongoose.connect(config.DB_URL);
+mongoose.connect(`mongodb+srv://${config.DB_USER}:${config.DB_PASS}@cluster0.${config.DB_URL}.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`);
 
 const courseRouter = require('./routes/course');
 const lessonRouter = require('./routes/lesson');
