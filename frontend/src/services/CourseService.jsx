@@ -1,6 +1,7 @@
 import Axios from "axios";
 
-export async function getCourses(user) {
-  const courses = await Axios.get("http://localhost:4000/courses");
-  return courses.data.filter((course) => { return user.courses.includes(course._id) });
+export async function getProfessor(course) {
+  const users = await Axios.get("http://localhost:4000/users");
+  const professor = users.data.find((user) => { return user._id === course.professor });
+  return professor;
 }

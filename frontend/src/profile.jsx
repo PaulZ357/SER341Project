@@ -1,14 +1,9 @@
 import React, { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import "./profile.css";
 
 function Profile() {
-  const location = useLocation();
-  const { firstName, lastName, role } = location.state || {
-    firstName: " ",
-    lastName: " ",
-    role: "Unknown",
-  };
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     password: "",
@@ -36,16 +31,16 @@ function Profile() {
     if (passwordError) {
       newErrors.password = passwordError;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
     // Role-specific validation
-    if (role === "Student" && !formData.major.trim()) {
+    if (user.type === "student" && !formData.major.trim()) {
       newErrors.major = "Major is required";
     }
-    if (role === "Professor" && !formData.courses.trim()) {
+    if (user.type === "professor" && !formData.courses.trim()) {
       newErrors.courses = "Courses taught are required";
     }
 
@@ -59,7 +54,7 @@ function Profile() {
 
     // Real-time validation
     const newErrors = { ...errors };
-    
+
     if (name === "password") {
       const passwordError = validatePassword(value);
       if (!passwordError) {
@@ -68,25 +63,25 @@ function Profile() {
         newErrors.password = passwordError;
       }
     }
-    
+
     if (name === "confirmPassword" && value === formData.password) {
       delete newErrors.confirmPassword;
     }
-    
+
     if (name === "major" && value.trim()) {
       delete newErrors.major;
     }
-    
+
     if (name === "courses" && value.trim()) {
       delete newErrors.courses;
     }
-    
+
     setErrors(newErrors);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       setSuccessMessage("Profile saved successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -101,7 +96,6 @@ function Profile() {
           <Link
             to="/selectcourse"
             className="btn btn-secondary"
-            state={{ firstName, lastName, role }}
           >
             Course Selection
           </Link>
@@ -118,7 +112,7 @@ function Profile() {
           <div className="profile-info">
             <p>
               <strong>
-                {firstName} {lastName}
+                {user.name}
               </strong>
             </p>
           </div>
@@ -127,7 +121,7 @@ function Profile() {
         <div className="line"></div>
 
         <form onSubmit={handleSubmit}>
-          {role === "Student" && (
+          {user.type === "student" && (
             <>
               <div className="profile-section">
                 <label htmlFor="major">Major:</label>
@@ -154,7 +148,7 @@ function Profile() {
             </>
           )}
 
-          {role === "Professor" && (
+          {user.type === "professor" && (
             <>
               <div className="profile-section">
                 <label htmlFor="courses">Courses Taught:</label>
@@ -212,7 +206,7 @@ function Profile() {
           </div>
 
           {successMessage && <p className="success-text">{successMessage}</p>}
-          
+
           <button
             type="submit"
             className="save-button"

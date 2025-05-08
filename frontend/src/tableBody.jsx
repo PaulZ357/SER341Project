@@ -1,8 +1,8 @@
 import React, { Component, useEffect } from "react";
 import { use } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { getCourses } from "./services/CourseService";
-import { getProfessor } from "./services/UserService";
+import { getCourses } from "./services/UserService";
+import { getProfessor } from "./services/CourseService";
 
 // Helper functional component to handle navigation
 const NavigateButton = ({ course, setIsLoggedIn }) => {
@@ -12,9 +12,10 @@ const NavigateButton = ({ course, setIsLoggedIn }) => {
   const handleClick = () => {
     // Example logic for logging in (if needed)
     if (setIsLoggedIn) setIsLoggedIn(true);
+    localStorage.setItem("course", JSON.stringify(course));
 
     // Navigate to the "/home" route and pass course details via state
-    navigate("/home", { state: { course } });
+    navigate("/home");
   };
 
   return <button onClick={handleClick}>{courseID}</button>;

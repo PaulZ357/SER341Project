@@ -7,12 +7,7 @@ import { getCourse } from "./../services/CourseService";
 
 function Course() {
   const location = useLocation();
-  const { role, firstName, lastName, email } = location.state || {
-    role: "Unknown",
-    firstName: " ",
-    lastName: " ",
-    email: " ",
-  };
+  const user = JSON.parse(localStorage.getItem("user"));
   return (
     <div className="app-container">
       <div className="left-sidebar">
@@ -20,16 +15,10 @@ function Course() {
             {/* Profile Button */}
             <Link
               to="/profile"
-              state={{
-                firstName,
-                lastName,
-                role,
-              }}
               className="btn btn-secondary"
             >
               Profile
             </Link>
-  
           {/* Log Out Button */}
           <Link to="/" className="btn btn-secondary">
             Log Out
