@@ -17,8 +17,7 @@ lessonRouter
 		try {
 			const lesson = new Lesson(req.body);
 			await lesson.save();
-			const lessonId = await lesson._id;
-			res.send(`Lesson saved successfully with id ${lessonId} `);
+			res.json(lesson);
 			console.log("Lesson saved successfully");
 		} catch (e) {
 			handleException(e, res);

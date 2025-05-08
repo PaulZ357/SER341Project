@@ -18,8 +18,7 @@ userRouter
 		try {
 			const user = new User(req.body);
 			await user.save();
-			const userId = await user._id;
-			res.send(`User saved successfully with id ${userId} `);
+			res.json(user);
 			console.log("User saved successfully");
 		} catch (e) {
 			handleException(e, res);

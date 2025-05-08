@@ -46,7 +46,7 @@ function Login({ setIsLoggedIn }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
     // Real-time validation
     const newErrors = { ...errors };
     if (name === "username" && value.length >= 4) {
@@ -66,7 +66,7 @@ function Login({ setIsLoggedIn }) {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -82,33 +82,29 @@ function Login({ setIsLoggedIn }) {
 
         const response = await Axios.post("http://localhost:4000/users", user);
         setIsLoggedIn(true);
-        navigate("/selectcourse", { state: { data: response.data } });
+        localStorage.setItem("user", JSON.stringify(response.data));
+        navigate("/selectcourse");
       } else {
         const response = await Axios.get("http://localhost:4000/users");
         const user = response.data.find(
-          (user) => 
-            user.username === formData.username && 
+          (user) =>
+            user.username === formData.username &&
             user.password === formData.password
         );
 
         if (user) {
           setIsLoggedIn(true);
-          navigate("/selectcourse", { 
-            state: { 
-              firstName: user.name.split(" ")[0],
-              lastName: user.name.split(" ")[1] || "",
-              role: user.type.charAt(0).toUpperCase() + user.type.slice(1)
-            }
-          });
+          localStorage.setItem("user", JSON.stringify(user));
+          navigate("/selectcourse");
         } else {
           setErrors({ form: "Invalid username or password" });
         }
       }
     } catch (error) {
       console.error("Error:", error);
-      setErrors({ 
-        form: signingUp 
-          ? "Error creating account. Please try again." 
+      setErrors({
+        form: signingUp
+          ? "Error creating account. Please try again."
           : "Error logging in. Please try again."
       });
     }
@@ -124,7 +120,7 @@ function Login({ setIsLoggedIn }) {
         <button onClick={() => setSigningUp(!signingUp)}>
           {signingUp ? "Log In" : "Sign Up"} instead
         </button>
-        
+
         <form onSubmit={handleSignUp}>
           {signingUp && (
             <>
@@ -167,7 +163,7 @@ function Login({ setIsLoggedIn }) {
               </div>
             </>
           )}
-          
+
           <div>
             <input
               type="text"
@@ -178,7 +174,7 @@ function Login({ setIsLoggedIn }) {
             />
             {errors.username && <p className="error-text">{errors.username}</p>}
           </div>
-          
+
           <div>
             <input
               type="password"
@@ -191,7 +187,7 @@ function Login({ setIsLoggedIn }) {
           </div>
 
           {errors.form && <p className="error-text">{errors.form}</p>}
-          
+
           <button type="submit">
             {signingUp ? "Sign Up" : "Log In"}
           </button>

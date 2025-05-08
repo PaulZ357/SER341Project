@@ -1,29 +1,6 @@
-const courses = [
-    {
-      id: 1,
-      courseID: "MA 229",
-      courseName: "Linear Algebra",
-      professor: "Prof. A"
-    },
-    {
-      id: 2,
-      courseID: "SER 340",
-      courseName: "Full Stack Development Pt.1",
-      professor: "Prof. B"
-    },
-    {
-      id: 3,
-      courseID: "SER 350",
-      courseName: "Project Management",
-      professor: "Prof. C"
-    },
+import Axios from "axios";
 
-  ];
-  export function getCourses() {
-    return courses;
-  }
-  
-export function getCourse(id) {
-    return courses.find((c) => c.id === id);
-  }
-  
+export async function getCourses(user) {
+  const courses = await Axios.get("http://localhost:4000/courses");
+  return courses.data.filter((course) => { return user.courses.includes(course._id) });
+}

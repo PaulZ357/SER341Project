@@ -17,8 +17,7 @@ feedbackRouter
 		try {
 			const feedback = new Feedback(req.body);
 			await feedback.save();
-			const feedbackId = await feedback._id;
-			res.send(`Feedback saved successfully with id ${feedbackId} `);
+			res.json(feedback);
 			console.log("Feedback saved successfully");
 		} catch (e) {
 			handleException(e, res);

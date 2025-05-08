@@ -17,8 +17,7 @@ courseRouter
 		try {
 			const course = new Course(req.body);
 			await course.save();
-			const courseId = await course._id;
-			res.send(`Course saved successfully with id ${courseId} `);
+			res.json(course);
 			console.log("Course saved successfully");
 		} catch (e) {
 			handleException(e, res);

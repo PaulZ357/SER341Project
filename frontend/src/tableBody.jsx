@@ -1,50 +1,63 @@
-import React, { Component } from "react";
-import { useNavigate,useLocation,Link } from "react-router-dom";
+import React, { Component, useEffect } from "react";
+import { use } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { getCourses } from "./services/CourseService";
+import { getProfessor } from "./services/UserService";
 
 // Helper functional component to handle navigation
 const NavigateButton = ({ course, setIsLoggedIn }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { role, firstName, lastName, email } = location.state || {
-    role: "Unknown",
-    firstName: " ",
-    lastName: " ",
-    email: " ",
-  };
   const courseID = course.courseID;
-  const courseName = course.courseName;
-  const professor = course.professor;
 
   const handleClick = () => {
     // Example logic for logging in (if needed)
     if (setIsLoggedIn) setIsLoggedIn(true);
 
     // Navigate to the "/home" route and pass course details via state
-    navigate("/home", { state: { role, email, firstName, lastName, courseID, courseName, professor } });
+    navigate("/home", { state: { course } });
   };
 
   return <button onClick={handleClick}>{courseID}</button>;
 };
 
-class TableBody extends Component {
-  render() {
-    const { courses, setIsLoggedIn } = this.props; // Destructuring props
+function TableBody() {
+  // const { courses, setIsLoggedIn } = this.props; // Destructuring props
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [courses, setCourses] = React.useState([]);
+  const [professors, setProfessors] = React.useState([]);
 
-    return (
-      <tbody>
-        {courses.map((course, index) => (
-          <tr key={index}>
-            <td>
-              {/* Use the helper functional component */}
-              <NavigateButton course={course} setIsLoggedIn={setIsLoggedIn} />
-            </td>
-            <td>{course.courseName}</td>
-            <td>{course.professor}</td>
-          </tr>
-        ))}
-      </tbody>
-    );
-  }
+  useEffect(() => {
+    async function fetchCourses() {
+      setCourses(await getCourses(user));
+    }
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      let newProfessors = [];
+      courses.map(async (course) => {
+        const professor = await getProfessor(course);
+        newProfessors.push(professor);
+        setProfessors(newProfessors);
+      });
+    }
+    fetchCourses();
+  }, [courses]);
+
+  return (
+    <tbody>
+      {courses.map((course, index) => (
+        <tr key={index}>
+          <td>
+            <NavigateButton course={course} />
+          </td>
+          <td>{course.courseName}</td>
+          <td>{professors[index] ? professors[index].name : "Loading..."}</td>
+        </tr>
+      ))}
+    </tbody>
+  );
 }
 
 export default TableBody;
