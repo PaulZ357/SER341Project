@@ -4,8 +4,9 @@ import "./home.css";
 
 function Home() {
     const location = useLocation();
-    const { role, firstName, lastName, email, courseID, courseName, professor } = location.state || {
-      role: "Unknown",
+
+    const { user, firstName, lastName, email, courseID, courseName, professor } = location.state || {
+      user: "Unknown",
       firstName: " ",
       lastName: " ",
       email: " ",
@@ -13,6 +14,7 @@ function Home() {
       courseName: " ",
       professor: " ",
     };
+
   
     return (
       <div className="app-container">
@@ -20,20 +22,20 @@ function Home() {
           <nav>
             {/* Common Home Button */}
             <Link
-              to="/home" className="btn btn-secondary" state={{ role, email, firstName, lastName, courseID, courseName, professor }}>Home</Link>
+              to="/home" className="btn btn-secondary" state={{ user, email, firstName, lastName, courseID, courseName, professor }}>Home</Link>
   
-            {/* Role-specific Buttons */}
-            {role === "Professor" ? (
+            {/* user-specific Buttons */}
+            {user === "Professor" ? (
               <>
                 <Link to="/seefeedback" className="btn btn-secondary" 
-                state={{role,email,firstName, lastName, courseID, courseName, professor}}>Feedback Log</Link>
+                state={{user,email,firstName, lastName, courseID, courseName, professor}}>Feedback Log</Link>
                 <a className="btn btn-secondary">Add Assignment</a>
               </>
             ) : (
               <Link to="/givefeedback" className="btn btn-secondary" state={{
                 firstName,
                 lastName,
-                role,
+                user,
               }}>
                 Give Feedback
               </Link>
@@ -45,7 +47,7 @@ function Home() {
               state={{
                 firstName,
                 lastName,
-                role,
+                user,
               }}
               className="btn btn-secondary"
             >
@@ -57,7 +59,7 @@ function Home() {
               state={{
                 firstName,
                 lastName,
-                role,
+                user,
               }}>
             Course Selection
             </Link>

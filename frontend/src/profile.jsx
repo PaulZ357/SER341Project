@@ -1,165 +1,229 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import "./profile.css";
 
 function Profile() {
-    const location = useLocation();
-    const { firstName, lastName, role } = location.state || {
-      firstName: " ",
-      lastName: " ",
-      role: "Unknown",
-    };
-  
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-  
-    const validatePassword = (password) => {
-      const passwordRegex = /^(?=.*[!@#$%^&*])(?=.*\d).{8,}$/;
-      if (!passwordRegex.test(password)) {
-        return "Password must be at least 8 characters long, include a number, and a special character.";
+  const location = useLocation();
+  const { firstName, lastName, role } = location.state || {
+    firstName: " ",
+    lastName: " ",
+    role: "Unknown",
+  };
+
+  const [formData, setFormData] = useState({
+    password: "",
+    confirmPassword: "",
+    major: "",
+    courses: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+    if (!password) return "Password is required";
+    if (!passwordRegex.test(password)) {
+      return "Password must be at least 8 characters, include a number, special character, uppercase, and lowercase letter";
+    }
+    return "";
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Password validation
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      newErrors.password = passwordError;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    // Role-specific validation
+    if (role === "Student" && !formData.major.trim()) {
+      newErrors.major = "Major is required";
+    }
+    if (role === "Professor" && !formData.courses.trim()) {
+      newErrors.courses = "Courses taught are required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Real-time validation
+    const newErrors = { ...errors };
+    
+    if (name === "password") {
+      const passwordError = validatePassword(value);
+      if (!passwordError) {
+        delete newErrors.password;
+      } else {
+        newErrors.password = passwordError;
       }
-      return "";
-    };
-  
-    const handlePasswordChange = (e) => {
-      const newPassword = e.target.value;
-      setPassword(newPassword);
-      const error = validatePassword(newPassword);
-      setPasswordError(error);
-    };
-  
-    const handleConfirmPasswordChange = (e) => {
-      setConfirmPassword(e.target.value);
-    };
-  
-    const isPasswordValid = password && !passwordError && password === confirmPassword;
-  
-    return (
-      <div className="app-container">
-      
+    }
+    
+    if (name === "confirmPassword" && value === formData.password) {
+      delete newErrors.confirmPassword;
+    }
+    
+    if (name === "major" && value.trim()) {
+      delete newErrors.major;
+    }
+    
+    if (name === "courses" && value.trim()) {
+      delete newErrors.courses;
+    }
+    
+    setErrors(newErrors);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      setSuccessMessage("Profile saved successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      // Optionally send data to backend here
+    }
+  };
+
+  return (
+    <div className="app-container">
       <div className="left-sidebar">
         <nav>
-  
-            {/* Course Selection Button */}
-            <Link to="/selectcourse" className="btn btn-secondary" 
-              state={{
-                firstName,
-                lastName,
-                role,
-              }}>
+          <Link
+            to="/selectcourse"
+            className="btn btn-secondary"
+            state={{ firstName, lastName, role }}
+          >
             Course Selection
-            </Link>
-            
-          {/* Log Out Button */}
+          </Link>
           <Link to="/" className="btn btn-secondary">
             Log Out
           </Link>
         </nav>
       </div>
       <div className="profile-container">
-        {/* Profile Header */}
         <div className="profile-header">
           <div className="profile-avatar">
             <img src="https://via.placeholder.com/80" alt="Avatar" />
           </div>
           <div className="profile-info">
-            <p><strong>{firstName} {lastName}</strong></p>
+            <p>
+              <strong>
+                {firstName} {lastName}
+              </strong>
+            </p>
           </div>
           <button className="edit-button">Edit</button>
         </div>
         <div className="line"></div>
-  
-        {/* Role-specific Sections */}
-        {role === "Student" ? (
-          <>
-            <div className="profile-section">
-              <label htmlFor="major">Major:</label>
-              <input
-                type="text"
-                id="major"
-                name="major"
-                placeholder="Enter your major"
-                className="profile-input"
-              />
-            </div>
-            <div className="profile-section">
-              <label htmlFor="additional-info">Additional Information:</label>
-              <textarea
-                id="additional-info"
-                name="additional-info"
-                placeholder="Enter additional information"
-                className="profile-textarea"
-              />
-            </div>
-          </>
-        ) : role === "Professor" ? (
-          <>
-            <div className="profile-section">
-              <label htmlFor="courses">Courses Taught:</label>
-              <input
-                type="text"
-                id="courses"
-                name="courses"
-                placeholder="Enter courses you teach"
-                className="profile-input"
-              />
-            </div>
-            <div className="profile-section">
-              <label htmlFor="additional-info">Additional Information:</label>
-              <textarea
-                id="additional-info"
-                name="additional-info"
-                placeholder="Enter additional information"
-                className="profile-textarea"
-              />
-            </div>
-          </>
-        ) : (
-          <p>No specific role information available.</p>
-        )}
-  
-        {/* Password Creation Section */}
-        <div className="profile-section">
-          <label htmlFor="password">Create Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter a strong password"
-            className="profile-input"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          {passwordError && <p className="error-text">{passwordError}</p>}
-        </div>
-        <div className="profile-section">
-          <label htmlFor="confirm-password">Confirm Password:</label>
-          <input
-            type="password"
-            id="confirm-password"
-            name="confirm-password"
-            placeholder="Re-enter your password"
-            className="profile-input"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-          />
-          {password && confirmPassword && password !== confirmPassword && (
-            <p className="error-text">Passwords do not match.</p>
-          )}
-        </div>
-  
-        <button
-          className="save-button"
-          disabled={!isPasswordValid}
-          onClick={() => alert("Password set successfully!")}
-        >
-          Save
-        </button>
-      </div>
-      </div>
-    );
-  }
 
+        <form onSubmit={handleSubmit}>
+          {role === "Student" && (
+            <>
+              <div className="profile-section">
+                <label htmlFor="major">Major:</label>
+                <input
+                  type="text"
+                  id="major"
+                  name="major"
+                  placeholder="Enter your major"
+                  className="profile-input"
+                  value={formData.major}
+                  onChange={handleInputChange}
+                />
+                {errors.major && <p className="error-text">{errors.major}</p>}
+              </div>
+              <div className="profile-section">
+                <label htmlFor="additional-info">Additional Information:</label>
+                <textarea
+                  id="additional-info"
+                  name="additional-info"
+                  placeholder="Enter additional information"
+                  className="profile-textarea"
+                />
+              </div>
+            </>
+          )}
+
+          {role === "Professor" && (
+            <>
+              <div className="profile-section">
+                <label htmlFor="courses">Courses Taught:</label>
+                <input
+                  type="text"
+                  id="courses"
+                  name="courses"
+                  placeholder="Enter courses you teach"
+                  className="profile-input"
+                  value={formData.courses}
+                  onChange={handleInputChange}
+                />
+                {errors.courses && <p className="error-text">{errors.courses}</p>}
+              </div>
+              <div className="profile-section">
+                <label htmlFor="additional-info">Additional Information:</label>
+                <textarea
+                  id="additional-info"
+                  name="additional-info"
+                  placeholder="Enter additional information"
+                  className="profile-textarea"
+                />
+              </div>
+            </>
+          )}
+
+          <div className="profile-section">
+            <label htmlFor="password">Create Password:</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter a strong password"
+              className="profile-input"
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            {errors.password && <p className="error-text">{errors.password}</p>}
+          </div>
+
+          <div className="profile-section">
+            <label htmlFor="confirm-password">Confirm Password:</label>
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm-password"
+              placeholder="Re-enter your password"
+              className="profile-input"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+            />
+            {errors.confirmPassword && (
+              <p className="error-text">{errors.confirmPassword}</p>
+            )}
+          </div>
+
+          {successMessage && <p className="success-text">{successMessage}</p>}
+          
+          <button
+            type="submit"
+            className="save-button"
+            disabled={Object.keys(errors).length > 0}
+          >
+            Save
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 export default Profile;

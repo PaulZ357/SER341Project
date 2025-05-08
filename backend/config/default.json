@@ -1,5 +1,5 @@
 {
-    // "DB_USER": "",
-    // "DB_PASS": "",
-    // "DB_URL": ""
+     "DB_USER": "omarfofana620 ",
+     "DB_PASS": "ANssuXBef2p31lBK ",
+    "DB_URL": "mongodb+srv://omarfofana620:ANssuXBef2p31lBK@cluster0.wakcl.mongodb.net/Feedback?retryWrites=true&w=majority&appName=Cluster0"
 }

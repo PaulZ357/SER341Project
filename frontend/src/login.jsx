@@ -4,64 +4,114 @@ import "./login.css";
 import Axios from "axios";
 
 function Login({ setIsLoggedIn }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
   const [signingUp, setSigningUp] = useState(false);
   const [professor, setProfessor] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignUp = () => {
+  const validateForm = () => {
+    const newErrors = {};
+
     if (signingUp) {
-      if (!firstName.trim() || !lastName.trim()) {
-        setError("Please enter both your first and last name.");
-        return;
+      if (!formData.firstName.trim()) {
+        newErrors.firstName = "First name is required";
       }
-      const user = {
-        name: `${firstName} ${lastName}`,
-        username: username,
-        password: "password", // Placeholder password, will be replaced with a secure system later
-        type: professor ? "professor" : "student"
+      if (!formData.lastName.trim()) {
+        newErrors.lastName = "Last name is required";
       }
-      console.log(user);
-      Axios.post("http://localhost:4000/users", user)
-        .then((response) => {
-          setIsLoggedIn(true);
-          const data = response.data;
-          console.log("User created:", data);
-          navigate("/selectcourse", { state: { data } });
-        })
-        .catch((error) => {
-          console.error("Error creating user:", error);
-          if (error.status >= 400 && error.status < 500) {
-            setError("Invalid username.");
-          } else if (error.status >= 500) {
-            setError("An error occurred while creating your account. Please try again.");
-          }
-          return;
-        });
     }
-    else {
-      Axios.get("http://localhost:4000/users").then((response) => {
-        const user = response.data.find(user => user.username === username);
+
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 4) {
+      newErrors.username = "Username must be at least 4 characters";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Real-time validation
+    const newErrors = { ...errors };
+    if (name === "username" && value.length >= 4) {
+      delete newErrors.username;
+    }
+    if (name === "password" && value.length >= 8) {
+      delete newErrors.password;
+    }
+    if (name === "firstName" && value.trim()) {
+      delete newErrors.firstName;
+    }
+    if (name === "lastName" && value.trim()) {
+      delete newErrors.lastName;
+    }
+    setErrors(newErrors);
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      if (signingUp) {
+        const user = {
+          name: `${formData.firstName} ${formData.lastName}`,
+          username: formData.username,
+          password: formData.password,
+          type: professor ? "professor" : "student",
+        };
+
+        const response = await Axios.post("http://localhost:4000/users", user);
+        setIsLoggedIn(true);
+        navigate("/selectcourse", { state: { data: response.data } });
+      } else {
+        const response = await Axios.get("http://localhost:4000/users");
+        const user = response.data.find(
+          (user) => 
+            user.username === formData.username && 
+            user.password === formData.password
+        );
+
         if (user) {
           setIsLoggedIn(true);
-          console.log("User created:", user);
-          navigate("/selectcourse", { state: { user } });
+          navigate("/selectcourse", { 
+            state: { 
+              firstName: user.name.split(" ")[0],
+              lastName: user.name.split(" ")[1] || "",
+              role: user.type.charAt(0).toUpperCase() + user.type.slice(1)
+            }
+          });
+        } else {
+          setErrors({ form: "Invalid username or password" });
         }
-        else {
-          setError("User not found. Please sign up first.");
-          return;
-        }
-      }).catch((error) => {
-        console.error("Error fetching user:", error);
-        setError("An error occurred while logging in. Please try again.");
-        return;
-      })
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setErrors({ 
+        form: signingUp 
+          ? "Error creating account. Please try again." 
+          : "Error logging in. Please try again."
+      });
     }
-    setError("");
-
   };
 
   return (
@@ -71,36 +121,81 @@ function Login({ setIsLoggedIn }) {
       </div>
       <div className="form-container">
         <h2>{signingUp ? "Sign Up" : "Log In"}</h2>
-        <button onClick={() => setSigningUp(!signingUp)}>{signingUp ? "Log In" : "Sign Up"} instead</button>
-        {signingUp ? (
+        <button onClick={() => setSigningUp(!signingUp)}>
+          {signingUp ? "Log In" : "Sign Up"} instead
+        </button>
+        
+        <form onSubmit={handleSignUp}>
+          {signingUp && (
+            <>
+              <div>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                />
+                {errors.firstName && <p className="error-text">{errors.firstName}</p>}
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                />
+                {errors.lastName && <p className="error-text">{errors.lastName}</p>}
+              </div>
+              <div>
+                <h4 className="role">Select Your Role</h4>
+                <button
+                  type="button"
+                  className={professor ? "gray-button" : ""}
+                  onClick={() => setProfessor(true)}
+                >
+                  Professor
+                </button>
+                <button
+                  type="button"
+                  className={professor ? "" : "gray-button"}
+                  onClick={() => setProfessor(false)}
+                >
+                  Student
+                </button>
+              </div>
+            </>
+          )}
+          
           <div>
             <input
               type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              name="username"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleInputChange}
             />
+            {errors.username && <p className="error-text">{errors.username}</p>}
+          </div>
+          
+          <div>
             <input
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleInputChange}
             />
-            <div>
-              <h4 class="role">Select Your Role</h4>
-              <button class={professor ? ("gray-button") : ("")} onClick={() => setProfessor(true)}>Professor</button>
-              <button class={professor ? ("") : ("gray-button")} onClick={() => setProfessor(false)}>Student</button>
-            </div>
-          </div>) : (<div />)}
-        <input
-          type="username"
-          placeholder="Enter your username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        {/* Put a password field here if you want to implement a password system later. */}
-        {error && <p className="error-text">{error}</p>}
-        <button onClick={handleSignUp}>Sign Up</button>
+            {errors.password && <p className="error-text">{errors.password}</p>}
+          </div>
+
+          {errors.form && <p className="error-text">{errors.form}</p>}
+          
+          <button type="submit">
+            {signingUp ? "Sign Up" : "Log In"}
+          </button>
+        </form>
       </div>
     </div>
   );
