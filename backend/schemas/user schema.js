@@ -2,7 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    name: {
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
         type: String,
         required: true
     },
@@ -28,7 +32,13 @@ var userSchema = new Schema({
     feedbacks: [{
         type: Schema.ObjectId,
         ref: 'Feedback'
-    }]
+    }],
+    additionalInfo: {
+        type: String,
+    },
+    major: {
+        type: String,
+    }
 });
 
 var users = mongoose.model('User', userSchema);

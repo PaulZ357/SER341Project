@@ -21,10 +21,6 @@ var courseSchema = new Schema({
         ref: 'User',
         required: true
     },
-    assignments: [{
-        type: Number,
-        required: true
-    }],
     lessons: [{
         type: Schema.ObjectId,
         ref: 'Lesson',
