@@ -14,7 +14,9 @@ const courseRouter = require('./routes/course');
 const lessonRouter = require('./routes/lesson');
 const feedbackRouter = require('./routes/feedback');
 const userRouter = require('./routes/users');
+var cors = require("cors");
 
+app.use(cors());
 app.use('/courses', courseRouter);
 app.use('/lessons', lessonRouter);
 app.use('/feedbacks', feedbackRouter);

@@ -105,3 +105,11 @@ button:hover {
   margin-top: 0px;
   margin-bottom: 15px;
 }
+
+.gray-button {
+  background-color: gray;
+}
+
+.gray-button:hover {
+  background-color: darkgray;
+}
