@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Axios from "axios";
 import "./addCourse.css";
 import "./login.css";
+import { getCourses } from "./services/UserService";
 
 function AddCourse() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -18,11 +19,7 @@ function AddCourse() {
   useEffect(() => {
     async function fetchCourses() {
       try {
-        const response = await Axios.get("http://localhost:4000/courses");
-        const professorCourses = response.data.filter(
-          (course) => course.professor === user._id
-        );
-        setCourses(professorCourses);
+        setCourses(await getCourses(user));
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -115,10 +112,10 @@ function AddCourse() {
     <div className="app-container">
       <div className="left-sidebar">
         <nav>
-          
+
           {user.type === "professor" ? (
             <>
-              
+
               <Link to="/addcourse" className="btn btn-secondary">Add Course</Link>
             </>
           ) : (
