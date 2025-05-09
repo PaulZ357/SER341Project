@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var lessonSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    },
     feedbacks: [{
         type: Schema.ObjectId,
         ref: 'Feedback'

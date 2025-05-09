@@ -10,6 +10,8 @@ import Givefeedback from "./givefeedback.jsx"
 import './App.css';
 import SeeFeedback from "./seefeedback.jsx";
 import AddCourse from "./addCourse.jsx";
+import AddLesson from "./addLesson.jsx";
+import AddStudent from "./addStudent.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,6 +39,8 @@ function App() {
           <Route path="/table" element={<Table />} />
 
           <Route path="/addcourse" element={<AddCourse />} />
+          <Route path="/addlesson" element={<AddLesson />} />
+          <Route path="/addstudent" element={<AddStudent />} />
 
         </Routes>
       </Router>

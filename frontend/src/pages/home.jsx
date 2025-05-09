@@ -17,7 +17,10 @@ function Home() {
             <>
               <Link to="/seefeedback" className="btn btn-secondary"
                 >Feedback Log</Link>
-              <a className="btn btn-secondary">Add Assignment</a>
+              <Link to="/addLesson" className="btn btn-secondary"
+                >Add Lesson</Link>
+              <Link to="/addStudent" className="btn btn-secondary"
+                >Add Student</Link>
             </>
           ) : (
             <Link to="/givefeedback"  className="btn btn-secondary">Give Feedback</Link>
