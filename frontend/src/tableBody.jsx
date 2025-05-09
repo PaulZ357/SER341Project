@@ -23,52 +23,29 @@ function TableBody() {
 
   useEffect(() => {
     async function fetchCourses() {
-      setLoading(true);
-      try {
-        const fetchedCourses = await getCourses(user);
-        setCourses(fetchedCourses);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-        setError("Failed to load courses.");
-        setLoading(false);
-      }
+      setCourses(await getCourses(user));
     }
     fetchCourses();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     async function fetchProfessors() {
-      try {
-        const professorPromises = courses.map((course) => getProfessor(course));
-        const fetchedProfessors = await Promise.all(professorPromises);
-        setProfessors(fetchedProfessors);
-      } catch (error) {
-        console.error("Error fetching professors:", error);
-        setError("Failed to load professor names.");
-      }
+      let newProfessors = [];
+      courses.map(async (course) => {
+        const professor = await getProfessor(course);
+        newProfessors.push(professor);
+        setProfessors(newProfessors);
+      });
     }
     if (courses.length > 0) {
       fetchProfessors();
     }
   }, [courses]);
 
-  if (loading) {
-    return <tbody><tr><td colSpan="3">Loading courses...</td></tr></tbody>;
-  }
-
-  if (error) {
-    return <tbody><tr><td colSpan="3">{error}</td></tr></tbody>;
-  }
-
-  if (courses.length === 0) {
-    return <tbody><tr><td colSpan="3">No courses found.</td></tr></tbody>;
-  }
-
   return (
     <tbody>
       {courses.map((course, index) => (
-        <tr key={course._id}>
+        <tr key={index}>
           <td>
             <NavigateButton course={course} />
           </td>
