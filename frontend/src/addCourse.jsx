@@ -118,7 +118,7 @@ function AddCourse() {
           
           {user.type === "professor" ? (
             <>
-              <Link to="/seefeedback" className="btn btn-secondary">Feedback Log</Link>
+              
               <Link to="/addcourse" className="btn btn-secondary">Add Course</Link>
             </>
           ) : (
