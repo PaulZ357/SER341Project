@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {  Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./profile.css";
 
 function Profile() {
@@ -26,7 +26,6 @@ function Profile() {
   const validateForm = () => {
     const newErrors = {};
 
-    // Password validation
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       newErrors.password = passwordError;
@@ -36,7 +35,6 @@ function Profile() {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    // Role-specific validation
     if (user.type === "student" && !formData.major.trim()) {
       newErrors.major = "Major is required";
     }
@@ -52,7 +50,6 @@ function Profile() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Real-time validation
     const newErrors = { ...errors };
 
     if (name === "password") {
@@ -85,7 +82,6 @@ function Profile() {
     if (validateForm()) {
       setSuccessMessage("Profile saved successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
-      // Optionally send data to backend here
     }
   };
 
@@ -93,33 +89,28 @@ function Profile() {
     <div className="app-container">
       <div className="left-sidebar">
         <nav>
-          <Link
-            to="/selectcourse"
-            className="btn btn-secondary"
-          >
-            Course Selection
-          </Link>
-          <Link to="/" className="btn btn-secondary">
-            Log Out
-          </Link>
+          {user.type === "professor" ? (
+            <>
+              <Link to="/seefeedback" className="btn btn-secondary">Feedback Log</Link>
+              <Link to="/addcourse" className="btn btn-secondary">Add Course</Link>
+            </>
+          ) : (
+            <Link to="/givefeedback" className="btn btn-secondary">Give Feedback</Link>
+          )}
+          <Link to="/profile" className="btn btn-secondary">Profile</Link>
+          <Link to="/selectcourse" className="btn btn-secondary">Course Selection</Link>
+          <Link to="/" className="btn btn-secondary">Log Out</Link>
         </nav>
       </div>
       <div className="profile-container">
         <div className="profile-header">
-          <div className="profile-avatar">
-            <img src="https://via.placeholder.com/80" alt="Avatar" />
-          </div>
           <div className="profile-info">
             <p>
-              <strong>
-                {user.firstName} {user.lastName}
-              </strong>
+              <strong>{user.firstName} {user.lastName}</strong>
             </p>
           </div>
-          <button className="edit-button">Edit</button>
         </div>
         <div className="line"></div>
-
         <form onSubmit={handleSubmit}>
           {user.type === "student" && (
             <>
@@ -147,20 +138,9 @@ function Profile() {
               </div>
             </>
           )}
-
           {user.type === "professor" && (
             <>
               <div className="profile-section">
-                <label htmlFor="courses">Courses Taught:</label>
-                <input
-                  type="text"
-                  id="courses"
-                  name="courses"
-                  placeholder="Enter courses you teach"
-                  className="profile-input"
-                  value={formData.courses}
-                  onChange={handleInputChange}
-                />
                 {errors.courses && <p className="error-text">{errors.courses}</p>}
               </div>
               <div className="profile-section">
@@ -174,7 +154,6 @@ function Profile() {
               </div>
             </>
           )}
-
           <div className="profile-section">
             <label htmlFor="password">Create Password:</label>
             <input
@@ -188,13 +167,12 @@ function Profile() {
             />
             {errors.password && <p className="error-text">{errors.password}</p>}
           </div>
-
           <div className="profile-section">
             <label htmlFor="confirm-password">Confirm Password:</label>
             <input
               type="password"
               id="confirm-password"
-              name="confirm-password"
+              name="confirmPassword"
               placeholder="Re-enter your password"
               className="profile-input"
               value={formData.confirmPassword}
@@ -204,9 +182,7 @@ function Profile() {
               <p className="error-text">{errors.confirmPassword}</p>
             )}
           </div>
-
           {successMessage && <p className="success-text">{successMessage}</p>}
-
           <button
             type="submit"
             className="save-button"

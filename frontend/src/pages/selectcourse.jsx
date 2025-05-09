@@ -19,6 +19,18 @@ function Course() {
             >
               Profile
             </Link>
+
+            {user.type === "professor" ? (
+                        <>
+                         
+                          <Link to="/addcourse" className="btn btn-secondary">Add Course</Link>
+                        </>
+                      ) : (
+                        <Link to="/givefeedback" className="btn btn-secondary">Give Feedback</Link>
+                      )}
+
+
+
           {/* Log Out Button */}
           <Link to="/" className="btn btn-secondary">
             Log Out

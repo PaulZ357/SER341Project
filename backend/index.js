@@ -10,6 +10,7 @@ const config = require('./config/default_TEMPLATE.json');
 const mongoose = require('mongoose');
 mongoose.connect(config.DB_URL);
 
+
 const courseRouter = require('./routes/course');
 const lessonRouter = require('./routes/lesson');
 const feedbackRouter = require('./routes/feedback');

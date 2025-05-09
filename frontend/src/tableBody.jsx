@@ -1,55 +1,74 @@
-import React, { Component, useEffect } from "react";
-import { use } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCourses } from "./services/UserService";
 import { getProfessor } from "./services/CourseService";
 
-// Helper functional component to handle navigation
-const NavigateButton = ({ course, setIsLoggedIn }) => {
+const NavigateButton = ({ course }) => {
   const navigate = useNavigate();
-  const courseID = course.courseID;
 
   const handleClick = () => {
-    // Example logic for logging in (if needed)
-    if (setIsLoggedIn) setIsLoggedIn(true);
     localStorage.setItem("course", JSON.stringify(course));
-
-    // Navigate to the "/home" route and pass course details via state
     navigate("/home");
   };
 
-  return <button onClick={handleClick}>{courseID}</button>;
+  return <button onClick={handleClick}>{course.courseID}</button>;
 };
 
 function TableBody() {
-  // const { courses, setIsLoggedIn } = this.props; // Destructuring props
   const user = JSON.parse(localStorage.getItem("user"));
-  const [courses, setCourses] = React.useState([]);
-  const [professors, setProfessors] = React.useState([]);
+  const [courses, setCourses] = useState([]);
+  const [professors, setProfessors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchCourses() {
-      setCourses(await getCourses(user));
+      setLoading(true);
+      try {
+        const fetchedCourses = await getCourses(user);
+        setCourses(fetchedCourses);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        setError("Failed to load courses.");
+        setLoading(false);
+      }
     }
     fetchCourses();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    async function fetchCourses() {
-      let newProfessors = [];
-      courses.map(async (course) => {
-        const professor = await getProfessor(course);
-        newProfessors.push(professor);
-        setProfessors(newProfessors);
-      });
+    async function fetchProfessors() {
+      try {
+        const professorPromises = courses.map((course) => getProfessor(course));
+        const fetchedProfessors = await Promise.all(professorPromises);
+        setProfessors(fetchedProfessors);
+      } catch (error) {
+        console.error("Error fetching professors:", error);
+        setError("Failed to load professor names.");
+      }
     }
-    fetchCourses();
+    if (courses.length > 0) {
+      fetchProfessors();
+    }
   }, [courses]);
+
+  if (loading) {
+    return <tbody><tr><td colSpan="3">Loading courses...</td></tr></tbody>;
+  }
+
+  if (error) {
+    return <tbody><tr><td colSpan="3">{error}</td></tr></tbody>;
+  }
+
+  if (courses.length === 0) {
+    return <tbody><tr><td colSpan="3">No courses found.</td></tr></tbody>;
+  }
 
   return (
     <tbody>
       {courses.map((course, index) => (
-        <tr key={index}>
+        <tr key={course._id}>
           <td>
             <NavigateButton course={course} />
           </td>
