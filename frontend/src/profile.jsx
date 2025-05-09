@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./profile.css";
+import  Axios  from "axios";
 
 function Profile() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -81,6 +82,12 @@ function Profile() {
 
     if (validateForm()) {
       setSuccessMessage("Profile saved successfully!");
+      Axios.put("http://localhost:4000/users", {
+        ...user,
+        password: formData.password,
+        major: formData.major,
+        additionalInfo: formData["additional-info"]
+      });
       setTimeout(() => setSuccessMessage(""), 3000);
     }
   };

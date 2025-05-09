@@ -7,5 +7,7 @@ export async function getCourse(lesson) {
 
 export async function getFeedbacks(lesson) {
   const feedbacks = await Axios.get("http://localhost:4000/feedbacks");
+  console.log(feedbacks.data);
+  console.log(lesson);
   return feedbacks.data.filter((feedback) => { return lesson.feedbacks.includes(feedback._id) });
 }

@@ -22,7 +22,6 @@ export async function getLessons(professor) {
   const lessons = await Axios.get("http://localhost:4000/lessons");
   return lessons.data.filter(async (lesson) => {
     const course = await getCourse(lesson);
-    console.log(course);
-    return await course.professor === professor._id;
+    return await course.professor === professor._id
   });
 }
