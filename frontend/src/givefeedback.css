@@ -45,3 +45,7 @@
 .submit {
     margin-top: 2%;
 }
+
+.feedback-form {
+    justify-content:first baseline;
+}

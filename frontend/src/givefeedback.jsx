@@ -15,8 +15,9 @@ function Feedback() {
 
   useEffect(() => {
     async function fetchData() {
-      getLessons(user).then((lessons) => {
-        setLessons(lessons);
+      getLessons(user).then((allLessons) => {
+        const filteredLessons = allLessons.filter(lesson => lesson.course === course._id);
+        setLessons(filteredLessons);
       });
     }
     fetchData();
@@ -42,11 +43,7 @@ function Feedback() {
       {lessons.map((lesson, index) => {
         return (
         <div class="feedback-form">
-          <div class="open-ended">
-            {/* <label for={question.name}>{question.name}:</label> */}
-            <textarea id={`description-${index}`} name={`description-${index}`}></textarea>
-          </div>
-          <form id={"rating" + index} class="rating-form"><h2>{index}</h2>
+          <form id={"rating" + index} class="rating-form"><h2>{index}: {lesson.name} </h2>
             <div class="rating">
               <input type="radio" id={"star5-" + index} name={`rating-${index}`} value="5" />
               <label for={"star5-" + index}>&#9733;</label>
@@ -60,6 +57,10 @@ function Feedback() {
               <label for={"star1-" + index}>&#9733;</label>
             </div>
           </form>
+          <div class="open-ended">
+            <label for={`description-${index}`}>Description:</label> 
+            <textarea id={`description-${index}`} name={`description-${index}`}></textarea>
+          </div>
           <button type="submit" class="submit" onClick={() => {
             console.log("Submit button clicked");
               // if (question.type === "rating") {
@@ -67,30 +68,45 @@ function Feedback() {
               const feedback = {
                 course: course._id,
                 student: user._id,
+                lesson: lesson._id,
                 description: document.getElementById(`description-${index}`).value,
                 rating: rating,
               }
               console.log(user.feedbacks);
               console.log(lesson.feedbacks);
-              if (user.feedbacks.some((feedback) => lesson.feedbacks.includes(feedback))) {
-                Axios.put(`http://localhost:4000/feedbacks/${user.feedbacks.find((feedback) => lesson.feedbacks.includes(feedback))}`, feedback);
+              
+              const feedbackId = user.feedbacks.find((f) => lesson.feedbacks.includes(f));
+
+              if (feedbackId) {
+                Axios.put(`http://localhost:4000/feedbacks/${feedbackId}`, feedback)
+                  .then(() => alert("Feedback updated successfully"))
+                  .catch(err => alert("Error updating feedback: " + err.message));
+              } else {
+                Axios.post("http://localhost:4000/feedbacks", feedback)
+                  .then((response) => {
+                    const newFeedbackId = response.data._id;
+
+                    Axios.put(`http://localhost:4000/users/${user._id}`, {
+                      ...user,
+                      feedbacks: [...user.feedbacks, newFeedbackId]
+                    });
+
+                    user.feedbacks.push(newFeedbackId);
+                    localStorage.setItem("user", JSON.stringify(user));
+
+                    Axios.put(`http://localhost:4000/lessons/${lesson._id}`, {
+                      ...lesson,
+                      feedbacks: [...lesson.feedbacks, newFeedbackId]
+                    });
+
+                    lesson.feedbacks.push(newFeedbackId);
+                    localStorage.setItem("lesson", JSON.stringify(lesson));
+
+                    alert("Feedback submitted successfully");
+                  })
+                  .catch(err => alert("Error submitting feedback: " + err.message));
               }
-              else {
-                Axios.post("http://localhost:4000/feedbacks", feedback).then((response) => {
-                  Axios.put(`http://localhost:4000/users/${user._id}`, {
-                    ...user,
-                    feedbacks: [...user.feedbacks, response.data._id]
-                  });
-                  user.feedbacks.push(response.data._id);
-                  localStorage.setItem("user", JSON.stringify(user));
-                  Axios.put(`http://localhost:4000/lessons/${lesson._id}`, {
-                    ...lesson,
-                    feedbacks: [...lesson.feedbacks, response.data._id]
-                  });
-                  lesson.feedbacks.push(response.data._id);
-                  localStorage.setItem("lesson", JSON.stringify(lesson));
-                });
-              }
+
           }}>Submit</button>
         </div>)})}
     </div>

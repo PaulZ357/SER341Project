@@ -13,6 +13,11 @@ var feedbackSchema = new Schema({
         ref: 'User',
         required: true
     },
+    lesson: {
+        type: Schema.ObjectId,
+        ref: 'Lesson',
+        required: true
+    },
     description: {
         type: String,
         required: true

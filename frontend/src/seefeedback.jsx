@@ -1,39 +1,49 @@
-import React, { Component, useEffect } from 'react';
-import { useLocation, Link } from "react-router-dom";
-import App from './login';
-import "./seefeedback.css"
-import { use } from 'react';
-import { getLessons } from './services/UserService';
-import { getFeedbacks } from './services/LessonService';
+import React, { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
+import Axios from 'axios';
+import "./seefeedback.css";
 
 function SeeFeedback() {
-  const [questions, setQuestions] = React.useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [lessonMap, setLessonMap] = useState({});
+  const user = JSON.parse(localStorage.getItem("user"));
+  const course = JSON.parse(localStorage.getItem("course"));
+
   useEffect(() => {
     async function fetchData() {
-      getLessons(user).then((lessons) => {
-        const lesson = lessons[0];
-        console.log(lesson);
-        getFeedbacks(lesson).then((feedbacks) => {
-          setQuestions(feedbacks);
-        });
-      });
+      try {
+        const feedbackRes = await Axios.get("http://localhost:4000/feedbacks");
+        const courseFeedbacks = feedbackRes.data.filter(f => f.course === course._id);
+
+        // Fetch unique lesson IDs
+        const lessonIds = [...new Set(courseFeedbacks.map(f => f.lesson))];
+
+        // Fetch all lesson details in parallel
+        const lessonPromises = lessonIds.map(id =>
+          Axios.get(`http://localhost:4000/lessons/${id}`).then(res => [id, res.data])
+        );
+
+        const lessonEntries = await Promise.all(lessonPromises);
+        const lessonMap = Object.fromEntries(lessonEntries);
+
+        setFeedbacks(courseFeedbacks);
+        setLessonMap(lessonMap);
+      } catch (err) {
+        console.error("Error fetching feedbacks or lessons:", err);
+      }
     }
+
     fetchData();
-  }, []);
-  const user = JSON.parse(localStorage.getItem("user"));
+  }, [course._id]);
+
   function Star({ isFilled }) {
-    if (isFilled) {
-      return <p className="checked">★</p>
-    }
-    else {
-      return <p>★</p>
-    }
+    return <p className={isFilled ? "checked" : ""}>★</p>;
   }
+
   return (
     <div className="app-container">
       <div className="left-sidebar">
         <nav>
-          
           {user.type === "professor" ? (
             <>
               <Link to="/seefeedback" className="btn btn-secondary">Feedback Log</Link>
@@ -48,16 +58,22 @@ function SeeFeedback() {
         </nav>
       </div>
       <div className="feedback-form">
-        {questions.map((question) => (
-          <div className="rating-form"><h2>{question.description}</h2>
-            <div className="rating">
-              <Star isFilled={question.rating > 4} />
-              <Star isFilled={question.rating > 3} />
-              <Star isFilled={question.rating > 2} />
-              <Star isFilled={question.rating > 1} />
-              <Star isFilled={question.rating > 0} />
+        {feedbacks.map((feedback, index) => {
+          const lessonName = lessonMap[feedback.lesson]?.name || "Unknown Lesson";
+          return (
+            <div className="rating-form" key={index}>
+              <h2>{lessonName}</h2>
+              <h4>{feedback.description}</h4>
+              <div className="rating">
+                <Star isFilled={feedback.rating >= 5} />
+                <Star isFilled={feedback.rating >= 4} />
+                <Star isFilled={feedback.rating >= 3} />
+                <Star isFilled={feedback.rating >= 2} />
+                <Star isFilled={feedback.rating >= 1} />
+              </div>
             </div>
-          </div>))}
+          );
+        })}
       </div>
     </div>
   );
