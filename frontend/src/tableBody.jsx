@@ -37,9 +37,7 @@ function TableBody() {
         setProfessors(newProfessors);
       });
     }
-    if (courses.length > 0) {
-      fetchProfessors();
-    }
+    fetchProfessors();
   }, [courses]);
 
   return (
@@ -50,7 +48,7 @@ function TableBody() {
             <NavigateButton course={course} />
           </td>
           <td>{course.courseName}</td>
-          <td>{professors[index] ? professors[index].name : "Loading..."}</td>
+          <td>{professors[index] ? `${professors[index].firstName} ${professors[index].lastName}` : "Loading..."}</td>
         </tr>
       ))}
     </tbody>

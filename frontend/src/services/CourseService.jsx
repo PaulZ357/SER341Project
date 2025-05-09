@@ -15,3 +15,9 @@ export async function deleteCourse(courseId) {
   const response = await Axios.delete(`http://localhost:4000/courses/${courseId}`);
   return response.data;
 }
+
+export async function getLessons(course) {
+  const lessons = await Axios.get("http://localhost:4000/lessons");
+  const filteredLessons = lessons.data.filter((lesson) => lesson.course === course._id);
+  return filteredLessons;
+}
